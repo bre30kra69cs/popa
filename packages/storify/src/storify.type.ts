@@ -4,26 +4,29 @@ export type Rec<V = unknown> = Record<string, V>;
 
 export type Action = (...args: any[]) => void;
 
-export type ActionsUtils<S extends Rec> = {
+export type Effect = (...args: any[]) => Promise<void>;
+
+export type MethodsUtils<S extends Rec> = {
   get: () => S;
   set: (data: Partial<S>) => void;
   action: <F extends Action>(fn: F) => F;
+  effect: <F extends Effect>(fn: F) => F;
 };
 
 export type StorifyTemplate<
   S extends Rec,
-  A extends Rec<Action> | void = void,
+  M extends Rec<Action | Effect> | void = void,
   P extends Rec | void = void,
 > = {
   name?: string;
   state: S;
   pass?: P;
-  actions?: (utils: ActionsUtils<S>) => A;
+  methods?: (utils: MethodsUtils<S>) => M;
 };
 
 export type Storify<
   S extends Rec,
-  A extends Rec<Action> | void = void,
+  M extends Rec<Action | Effect> | void = void,
   P extends Rec | void = void,
 > = {
   get: () => S;
@@ -31,7 +34,7 @@ export type Storify<
   name: () => string | undefined;
   listen: (listner: Listner<S>) => () => void;
   unlisten: (listner: Listner<S>) => void;
-} & A &
+} & M &
   P;
 
 export type ShouldUpdate<S extends Rec> = (state: S, data: Partial<S>) => boolean;

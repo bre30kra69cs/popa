@@ -1,4 +1,4 @@
-import {Rec, Action, StorifyTemplate, Storify, StorifyConfig} from './storify.type';
+import {Rec, Action, Effect, StorifyTemplate, Storify, StorifyConfig} from './storify.type';
 import {Listner} from './events.type';
 import {store} from './store';
 
@@ -66,10 +66,15 @@ export const storify = <
     return fn;
   };
 
-  const actions = template.actions?.({
+  const effect = <F extends Effect>(fn: F): F => {
+    return fn;
+  };
+
+  const methods = template.methods?.({
     get,
     set,
     action,
+    effect,
   });
 
   return {
@@ -78,7 +83,7 @@ export const storify = <
     name,
     listen,
     unlisten,
-    ...((actions ?? {}) as A),
+    ...((methods ?? {}) as A),
     ...((template.pass ?? {}) as P),
   };
 };
