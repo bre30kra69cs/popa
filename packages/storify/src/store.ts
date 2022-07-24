@@ -11,12 +11,8 @@ export const store = <T>(init: T): Store<T> => {
   };
 
   const set = (nextState: T) => {
-    const prevState = state;
     state = nextState;
-
-    if (prevState !== state) {
-      emit();
-    }
+    listners.emit(state);
   };
 
   const listen = (listner: Listner<T>) => {
