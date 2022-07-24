@@ -4,7 +4,7 @@ import {events} from './events';
 
 export const store = <T>(init: T): Store<T> => {
   let state = init;
-  const listners = events<T>();
+  const storeEvents = events<T>();
 
   const get = () => {
     return state;
@@ -12,19 +12,19 @@ export const store = <T>(init: T): Store<T> => {
 
   const set = (nextState: T) => {
     state = nextState;
-    listners.emit(state);
+    storeEvents.emit(state);
   };
 
   const listen = (listner: Listner<T>) => {
-    return listners.listen(listner);
+    return storeEvents.listen(listner);
   };
 
   const unlisten = (listner: Listner<T>) => {
-    listners.unlisten(listner);
+    storeEvents.unlisten(listner);
   };
 
   const emit = () => {
-    listners.emit(get());
+    storeEvents.emit(get());
   };
 
   return {

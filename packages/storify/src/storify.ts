@@ -1,4 +1,13 @@
-import {Rec, Action, Effect, StorifyTemplate, Storify, StorifyConfig} from './storify.type';
+import {
+  Rec,
+  Action,
+  Effect,
+  EffectStatus,
+  EffectUnit,
+  Storify,
+  StorifyTemplate,
+  StorifyConfig,
+} from './storify.type';
 import {Listner} from './events.type';
 import {store} from './store';
 
@@ -62,12 +71,55 @@ export const storify = <
     state.unlisten(listner);
   };
 
-  const action = <F extends Action>(fn: F): F => {
-    return fn;
+  const action = <F extends Action>(fn: F, propagate?: boolean): F => {
+    const target = (...args: Parameters<F>) => {
+      try {
+        fn(...args);
+      } catch (error) {
+        if (propagate) {
+          throw error;
+        }
+      }
+    };
+
+    return target as F;
   };
 
-  const effect = <F extends Effect>(fn: F): F => {
-    return fn;
+  const effect = <F extends Effect>(fn: F, propagate?: boolean): EffectUnit<F> => {
+    const effectStatus = store<EffectStatus>('init');
+
+    const target = async (...args: Parameters<F>) => {
+      effectStatus.set('load');
+
+      try {
+        await fn(...args);
+        effectStatus.set('done');
+      } catch (error) {
+        effectStatus.set('fail');
+
+        if (propagate) {
+          throw error;
+        }
+      }
+    };
+
+    const status = () => {
+      return effectStatus.get();
+    };
+
+    const listen = (listner: Listner<EffectStatus>) => {
+      return effectStatus.listen(listner);
+    };
+
+    const unlisten = (listner: Listner<EffectStatus>) => {
+      effectStatus.unlisten(listner);
+    };
+
+    target['status'] = status;
+    target['listen'] = listen;
+    target['unlisten'] = unlisten;
+
+    return target as EffectUnit<F>;
   };
 
   const methods = template.methods?.({

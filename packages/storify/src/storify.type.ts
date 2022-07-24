@@ -6,11 +6,19 @@ export type Action = (...args: any[]) => void;
 
 export type Effect = (...args: any[]) => Promise<void>;
 
+export type EffectStatus = 'init' | 'load' | 'done' | 'fail';
+
+export type EffectUnit<F extends Effect> = F & {
+  status: () => EffectStatus;
+  listen: (listner: Listner<EffectStatus>) => () => void;
+  unlisten: (listner: Listner<EffectStatus>) => void;
+};
+
 export type MethodsUtils<S extends Rec> = {
   get: () => S;
-  set: (data: Partial<S>) => void;
-  action: <F extends Action>(fn: F) => F;
-  effect: <F extends Effect>(fn: F) => F;
+  set: (data: Partial<S>, setConfig?: StorifyConfig<S>) => void;
+  action: <F extends Action>(fn: F, propagate?: boolean) => F;
+  effect: <F extends Effect>(fn: F, propagate?: boolean) => EffectUnit<F>;
 };
 
 export type StorifyTemplate<
@@ -30,7 +38,7 @@ export type Storify<
   P extends Rec | void = void,
 > = {
   get: () => S;
-  set: (data: Partial<S>) => void;
+  set: (data: Partial<S>, setConfig?: StorifyConfig<S>) => void;
   name: () => string | undefined;
   listen: (listner: Listner<S>) => () => void;
   unlisten: (listner: Listner<S>) => void;
