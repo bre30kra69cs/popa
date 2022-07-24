@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "downlevelIteration": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@popa/storify",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "module": "build/index.esm.js",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "2.7.1",
+    "typescript": "4.7.4"
+  }
+}
